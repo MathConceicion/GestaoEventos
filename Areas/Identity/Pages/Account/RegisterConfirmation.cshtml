@@ -1,0 +1,56 @@
+﻿@page
+@model RegisterConfirmationModel
+@{
+    ViewData["Title"] = "Confirmação de Registro";
+}
+
+<div class="min-vh-100 d-flex align-items-center justify-content-center py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-5">
+
+                <div class="card border-0 shadow-sm rounded-4 p-4 text-center">
+                    <div class="card-body py-4">
+
+                        @if (Model.DisplayConfirmAccountLink)
+                        {
+                            <div class="mb-3 text-warning">
+                                <i class="bi bi-exclamation-triangle" style="font-size: 3rem;"></i>
+                            </div>
+
+                            <h1 class="fw-bold fs-3 mb-2">Ambiente de desenvolvimento</h1>
+                            <p class="text-muted small mb-3">
+                                Nenhum serviço de e-mail está configurado. Em produção, um e-mail seria enviado automaticamente.
+                                Consulte <a href="https://aka.ms/aspaccountconf" class="text-decoration-none">esta documentação</a> para configurar um serviço real.
+                            </p>
+
+                            <a id="confirm-link" href="@Model.EmailConfirmationUrl" class="btn btn-dark w-100 btn-lg rounded-3 fw-semibold mb-3">
+                                Confirmar conta manualmente
+                            </a>
+                        }
+                        else
+                        {
+                            <div class="mb-3 text-success">
+                                <i class="bi bi-envelope-check" style="font-size: 3rem;"></i>
+                            </div>
+
+                            <h1 class="fw-bold fs-3 mb-2">Verifique seu e-mail</h1>
+                            <p class="text-muted small mb-4">
+                                Enviamos um link de confirmação para o seu e-mail. Acesse sua caixa de entrada e confirme sua conta para continuar.
+                            </p>
+
+                            <a asp-page="./Login" class="btn btn-dark w-100 btn-lg rounded-3 fw-semibold mb-3">
+                                Ir para o login
+                            </a>
+
+                            <div class="text-center">
+                                <a asp-page="./ResendEmailConfirmation" class="text-muted small text-decoration-none">Não recebeu? Reenviar e-mail</a>
+                            </div>
+                        }
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
