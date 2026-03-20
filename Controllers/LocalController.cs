@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using GestaoEventos.Data;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using GestaoEventos.Data;
 
 namespace GestaoEventos.Controllers
 {
@@ -19,6 +15,7 @@ namespace GestaoEventos.Controllers
         }
 
         // GET: Local
+        [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
             return View(await _context.Local.ToListAsync());
@@ -43,6 +40,7 @@ namespace GestaoEventos.Controllers
         }
 
         // GET: Local/Create
+        [Authorize(Roles = "Admin")]
         public IActionResult Create()
         {
             return View();
@@ -53,6 +51,7 @@ namespace GestaoEventos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Create([Bind("Id,Nome,Capacidade")] Local local)
         {
             if (ModelState.IsValid)
@@ -65,6 +64,7 @@ namespace GestaoEventos.Controllers
         }
 
         // GET: Local/Edit/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -85,6 +85,7 @@ namespace GestaoEventos.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Capacidade")] Local local)
         {
             if (id != local.Id)
@@ -116,6 +117,7 @@ namespace GestaoEventos.Controllers
         }
 
         // GET: Local/Delete/5
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -136,6 +138,7 @@ namespace GestaoEventos.Controllers
         // POST: Local/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var local = await _context.Local.FindAsync(id);

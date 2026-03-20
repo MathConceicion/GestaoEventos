@@ -2,27 +2,30 @@
 using GestaoEventos.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace GestaoEventos.Controllers
 {
-    public class CategoriasController : Controller
+    public class EventosController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public CategoriasController(ApplicationDbContext context)
+        public EventosController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Categorias
+        // GET: Eventos
+        // No controller, definir as rotas e suas permissões
         [AllowAnonymous]
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Categorias.ToListAsync());
+            var applicationDbContext = _context.Eventos.Include(e => e.Categoria).Include(e => e.Local);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Categorias/Details/5
+        // GET: Eventos/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -30,41 +33,48 @@ namespace GestaoEventos.Controllers
                 return NotFound();
             }
 
-            var categoria = await _context.Categorias
+            var evento = await _context.Eventos
+                .Include(e => e.Categoria)
+                .Include(e => e.Local)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (categoria == null)
+            if (evento == null)
             {
                 return NotFound();
             }
 
-            return View(categoria);
+            return View(evento);
         }
 
-        // GET: Categorias/Create
         [Authorize(Roles = "Admin")]
+        // GET: Eventos/Create
         public IActionResult Create()
         {
+            ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome");
+            ViewData["LocalId"] = new SelectList(_context.Local, "Id", "Nome");
             return View();
         }
 
-        // POST: Categorias/Create
+        // POST: Eventos/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
+        // Colocar a Role que tu permite ver essa página/ação
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Create([Bind("Id,Nome")] Categoria categoria)
+        public async Task<IActionResult> Create([Bind("Id,Nome,Data,CategoriaId,LocalId")] Evento evento)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(categoria);
+                _context.Add(evento);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(categoria);
+            ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", evento.CategoriaId);
+            ViewData["LocalId"] = new SelectList(_context.Local, "Id", "Nome", evento.LocalId);
+            return View(evento);
         }
 
-        // GET: Categorias/Edit/5
+        // GET: Eventos/Edit/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Edit(int? id)
         {
@@ -73,23 +83,25 @@ namespace GestaoEventos.Controllers
                 return NotFound();
             }
 
-            var categoria = await _context.Categorias.FindAsync(id);
-            if (categoria == null)
+            var evento = await _context.Eventos.FindAsync(id);
+            if (evento == null)
             {
                 return NotFound();
             }
-            return View(categoria);
+            ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", evento.CategoriaId);
+            ViewData["LocalId"] = new SelectList(_context.Local, "Id", "Nome", evento.LocalId);
+            return View(evento);
         }
 
-        // POST: Categorias/Edit/5
+        // POST: Eventos/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome")] Categoria categoria)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,Nome,Data,CategoriaId,LocalId")] Evento evento)
         {
-            if (id != categoria.Id)
+            if (id != evento.Id)
             {
                 return NotFound();
             }
@@ -98,12 +110,12 @@ namespace GestaoEventos.Controllers
             {
                 try
                 {
-                    _context.Update(categoria);
+                    _context.Update(evento);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!CategoriaExists(categoria.Id))
+                    if (!EventoExists(evento.Id))
                     {
                         return NotFound();
                     }
@@ -114,10 +126,12 @@ namespace GestaoEventos.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(categoria);
+            ViewData["CategoriaId"] = new SelectList(_context.Categorias, "Id", "Nome", evento.CategoriaId);
+            ViewData["LocalId"] = new SelectList(_context.Local, "Id", "Nome", evento.LocalId);
+            return View(evento);
         }
 
-        // GET: Categorias/Delete/5
+        // GET: Eventos/Delete/5
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Delete(int? id)
         {
@@ -126,35 +140,37 @@ namespace GestaoEventos.Controllers
                 return NotFound();
             }
 
-            var categoria = await _context.Categorias
+            var evento = await _context.Eventos
+                .Include(e => e.Categoria)
+                .Include(e => e.Local)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (categoria == null)
+            if (evento == null)
             {
                 return NotFound();
             }
 
-            return View(categoria);
+            return View(evento);
         }
 
-        // POST: Categorias/Delete/5
+        // POST: Eventos/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var categoria = await _context.Categorias.FindAsync(id);
-            if (categoria != null)
+            var evento = await _context.Eventos.FindAsync(id);
+            if (evento != null)
             {
-                _context.Categorias.Remove(categoria);
+                _context.Eventos.Remove(evento);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool CategoriaExists(int id)
+        private bool EventoExists(int id)
         {
-            return _context.Categorias.Any(e => e.Id == id);
+            return _context.Eventos.Any(e => e.Id == id);
         }
     }
 }

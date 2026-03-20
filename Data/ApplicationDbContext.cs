@@ -14,6 +14,8 @@ public class ApplicationDbContext : IdentityDbContext
 
     public DbSet<Local> Local { get; set; }
 
+    public DbSet<Evento> Eventos { get; set; }
+
 
 
 }

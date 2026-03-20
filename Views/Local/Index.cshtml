@@ -8,9 +8,13 @@
     <h2 class="text-primary">
         <i class="fa-solid fa-location-dot me-2"></i> Lista de Locais
     </h2>
+
+    @if (User.IsInRole("Admin"))
+    {
     <a asp-action="Create" class="btn btn-success shadow-sm">
         <i class="fa-solid fa-plus me-1"></i> Novo Local
     </a>
+    }
 </div>
 
 <div class="card shadow border-0">
@@ -20,7 +24,11 @@
                 <tr>
                     <th class="ps-4">@Html.DisplayNameFor(model => model.Nome)</th>
                     <th class="ps-4">@Html.DisplayNameFor(model => model.Capacidade)</th>
+
+                    @if (User.IsInRole("Admin"))
+                    {
                     <th class="text-center" style="width:200px;">Ações</th>
+                    }
                 </tr>
             </thead>
             <tbody>
@@ -29,6 +37,9 @@
                     <tr>
                         <td class="align-middle fw-bold ps-4">@Html.DisplayFor(modelItem => item.Nome)</td>
                         <td class="align-middle ps-4">@Html.DisplayFor(modelItem => item.Capacidade)</td>
+
+                        @if (User.IsInRole("Admin"))
+                        {
                         <td class="text-center">
                             <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-warning shadow-sm me-1">
                                 <i class="fa-solid fa-pen-to-square"></i>
@@ -37,6 +48,7 @@
                                 <i class="fa-solid fa-trash"></i>
                             </a>
                         </td>
+                        }
                     </tr>
                 }
             </tbody>
